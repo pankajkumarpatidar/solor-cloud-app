@@ -16,7 +16,35 @@ app.get("/", (req, res) => {
 app.post("/register", async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
 
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(400).json({ message: "User not found ❌" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: "Wrong password ❌" });
+    }
+
+    res.json({
+      message: "Login successful ✅",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
