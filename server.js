@@ -11,7 +11,7 @@ mongoose.connect(process.env.MONGO_URI)
 .then(() => console.log("MongoDB Connected ✅"))
 .catch(err => console.log("MongoDB Error ❌", err));
 app.get("/", (req, res) => {
-  res.send("Solar Cloud App Running 🚀");
+  res.send("NEW VERSION LIVE 🔥");
 });
 app.post("/register", async (req, res) => {
   try {
