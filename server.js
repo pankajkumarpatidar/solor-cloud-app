@@ -82,6 +82,33 @@ app.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+//protected root ===============//start
+
+function verifyToken(req, res, next) {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ message: "Access denied ❌" });
+  }
+
+  try {
+    const verified = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
+    req.user = verified;
+    next();
+  } catch (err) {
+    res.status(400).json({ message: "Invalid token ❌" });
+  }
+}
+
+app.get("/profile", verifyToken, (req, res) => {
+  res.json({
+    message: "Protected route accessed ✅",
+    user: req.user
+  });
+});
+//protected root ===============//end
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
