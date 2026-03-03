@@ -108,7 +108,36 @@ app.get("/profile", verifyToken, (req, res) => {
   });
 });
 //protected root ===============//end
+// ================= ROLE CHECK MIDDLEWARE =================
+function verifyRole(...allowedRoles) {
+  return (req, res, next) => {
+    if (!allowedRoles.includes(req.user.role)) {
+      return res.status(403).json({ message: "Access forbidden ❌" });
+    }
+    next();
+  };
+}
+//end//////
+// Only Superadmin
+app.get(
+  "/admin-only",
+  verifyToken,
+  verifyRole("superadmin"),
+  (req, res) => {
+    res.json({ message: "Welcome Superadmin 👑" });
+  }
+);
 
+// Superadmin + Senior
+app.get(
+  "/management",
+  verifyToken,
+  verifyRole("superadmin", "senior"),
+  (req, res) => {
+    res.json({ message: "Management Access Granted ✅" });
+  }
+);
+////end////
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, "0.0.0.0", () => {
